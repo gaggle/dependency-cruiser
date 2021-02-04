@@ -12,6 +12,7 @@ const identity = require("./identity");
 const json = require("./json");
 const teamcity = require("./teamcity");
 const text = require("./text");
+const { getPluginReporter } = require("./plugins");
 
 const TYPE2REPORTER = {
   anon,
@@ -35,14 +36,16 @@ const TYPE2REPORTER = {
  * Returns the reporter function associated with given output type,
  * or the identity reporter if that output type wasn't found
  *
- * @param {OutputType} pOutputType -
+ * @param {OutputType | string} pOutputType -
  * @returns {function} - a function that takes an ICruiseResult, optionally
  *                       an options object (specific to that function)
  *                       and returns an IReporterOutput
  */
 function getReporter(pOutputType) {
-  // eslint-disable-next-line security/detect-object-injection
-  return TYPE2REPORTER[pOutputType] || identity;
+  return (
+    // eslint-disable-next-line security/detect-object-injection
+    TYPE2REPORTER[pOutputType] || getPluginReporter(pOutputType) || identity
+  );
 }
 
 /**
